@@ -85,7 +85,7 @@ spec:
         command: ['sh', '-c', 'until nc -z mysql 5506; do echo esperando mysql; sleep 3; done']
       containers:
       - name: healthtech-admp
-        image: 784303971152.dkr.ecr.us-east-1.amazonaws.com/ms-amdp:latest
+        image: 784303971152.dkr.ecr.us-east-1.amazonaws.com/ms-admp:latest
         imagePullPolicy: Always
         env:
         - name: DB_HOST
