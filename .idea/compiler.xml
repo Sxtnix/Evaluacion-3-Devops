@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="ms-ADMP" />
+        <module name="ms-CITAS" />
+        <module name="ms-FICHA" />
+        <module name="ms-FARMACIA" />
+        <module name="ms-PERSONAL" />
+        <module name="ms-PROVEEDOR" />
+        <module name="ms-RECETA" />
+        <module name="ms-EXAMEN" />
+        <module name="ms-INVENTARIO" />
+        <module name="ms-HOSPITALIZACION" />
+        <module name="ms-ESPECIALIDAD" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="miproyecto-parent" target="1.5" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ms-ADMP" options="-parameters" />
+      <module name="ms-CITAS" options="-parameters" />
+      <module name="ms-ESPECIALIDAD" options="-parameters" />
+      <module name="ms-EXAMEN" options="-parameters" />
+      <module name="ms-FARMACIA" options="-parameters" />
+      <module name="ms-FICHA" options="-parameters" />
+      <module name="ms-HOSPITALIZACION" options="-parameters" />
+      <module name="ms-INVENTARIO" options="-parameters" />
+      <module name="ms-PERSONAL" options="-parameters" />
+      <module name="ms-PROVEEDOR" options="-parameters" />
+      <module name="ms-RECETA" options="-parameters" />
+    </option>
+  </component>
+</project>

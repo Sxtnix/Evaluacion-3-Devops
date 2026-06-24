@@ -1,0 +1,12 @@
+com\HealthTech\ms_CITAS\enums\ModalidadCita.class
+com\HealthTech\ms_CITAS\enums\EstadoCita.class
+com\HealthTech\ms_CITAS\model\Cita.class
+com\HealthTech\ms_CITAS\exception\BadRequestException.class
+com\HealthTech\ms_CITAS\controllers\CitaController.class
+com\HealthTech\ms_CITAS\exception\GlobalExceptionHandler.class
+com\HealthTech\ms_CITAS\exception\ResourceNotFoundException.class
+com\HealthTech\ms_CITAS\config\WebClientConfig.class
+com\HealthTech\ms_CITAS\repositories\CitaRepository.class
+com\HealthTech\ms_CITAS\MsCitasApplication.class
+com\HealthTech\ms_CITAS\services\CitaService.class
+com\HealthTech\ms_CITAS\services\ConexionService.class

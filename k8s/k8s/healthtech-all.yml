@@ -1,0 +1,615 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb
+  labels:
+    app: mysql
+data:
+  init.sql: |
+    CREATE DATABASE IF NOT EXISTS ADMP;
+    CREATE DATABASE IF NOT EXISTS CITAS;
+    CREATE DATABASE IF NOT EXISTS ESPECIALIDAD;
+    CREATE DATABASE IF NOT EXISTS EXAMEN;
+    CREATE DATABASE IF NOT EXISTS FARMACIA;
+    CREATE DATABASE IF NOT EXISTS FICHA;
+    CREATE DATABASE IF NOT EXISTS HOSPITALIZACION;
+    CREATE DATABASE IF NOT EXISTS INVENTARIO;
+    CREATE DATABASE IF NOT EXISTS PERSONAL;
+    CREATE DATABASE IF NOT EXISTS PROVEEDOR;
+    CREATE DATABASE IF NOT EXISTS RECETA;
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: copito2004
+        - name: MYSQL_DATABASE
+          value: ADMP
+        ports:
+        - containerPort: 5506
+        volumeMounts:
+        - name: mysql-initdb
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: mysql-initdb
+        configMap:
+          name: mysql-initdb
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  selector:
+    app: mysql
+  ports:
+  - port: 5506
+    targetPort: 5506
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthtech-admp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthtech-admp
+  template:
+    metadata:
+      labels:
+        app: healthtech-admp
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z mysql 5506; do echo esperando mysql; sleep 3; done']
+      containers:
+      - name: healthtech-admp
+        image: 784303971152.dkr.ecr.us-east-1.amazonaws.com/ms-amdp:latest
+        imagePullPolicy: Always
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: DB_PORT
+          value: "5506"
+        - name: DB_NAME
+          value: ADMP
+        - name: DB_USER
+          value: root
+        - name: DB_PASSWORD
+          value: copito2004
+        ports:
+        - containerPort: 8081
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthtech-admp-service
+spec:
+  selector:
+    app: healthtech-admp
+  ports:
+  - port: 8081
+    targetPort: 8081
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthtech-citas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthtech-citas
+  template:
+    metadata:
+      labels:
+        app: healthtech-citas
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z mysql 5506; do echo esperando mysql; sleep 3; done']
+      containers:
+      - name: healthtech-citas
+        image: 784303971152.dkr.ecr.us-east-1.amazonaws.com/ms-citas:latest
+        imagePullPolicy: Always
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: DB_PORT
+          value: "5506"
+        - name: DB_NAME
+          value: CITAS
+        - name: DB_USER
+          value: root
+        - name: DB_PASSWORD
+          value: copito2004
+        ports:
+        - containerPort: 8082
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthtech-citas-service
+spec:
+  selector:
+    app: healthtech-citas
+  ports:
+  - port: 8082
+    targetPort: 8082
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthtech-especialidad
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthtech-especialidad
+  template:
+    metadata:
+      labels:
+        app: healthtech-especialidad
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z mysql 5506; do echo esperando mysql; sleep 3; done']
+      containers:
+      - name: healthtech-especialidad
+        image: 784303971152.dkr.ecr.us-east-1.amazonaws.com/ms-especialidad:latest
+        imagePullPolicy: Always
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: DB_PORT
+          value: "5506"
+        - name: DB_NAME
+          value: ESPECIALIDAD
+        - name: DB_USER
+          value: root
+        - name: DB_PASSWORD
+          value: copito2004
+        ports:
+        - containerPort: 8083
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthtech-especialidad-service
+spec:
+  selector:
+    app: healthtech-especialidad
+  ports:
+  - port: 8083
+    targetPort: 8083
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthtech-examen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthtech-examen
+  template:
+    metadata:
+      labels:
+        app: healthtech-examen
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z mysql 5506; do echo esperando mysql; sleep 3; done']
+      containers:
+      - name: healthtech-examen
+        image: 784303971152.dkr.ecr.us-east-1.amazonaws.com/ms-examen:latest
+        imagePullPolicy: Always
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: DB_PORT
+          value: "5506"
+        - name: DB_NAME
+          value: EXAMEN
+        - name: DB_USER
+          value: root
+        - name: DB_PASSWORD
+          value: copito2004
+        ports:
+        - containerPort: 8084
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthtech-examen-service
+spec:
+  selector:
+    app: healthtech-examen
+  ports:
+  - port: 8084
+    targetPort: 8084
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthtech-farmacia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthtech-farmacia
+  template:
+    metadata:
+      labels:
+        app: healthtech-farmacia
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z mysql 5506; do echo esperando mysql; sleep 3; done']
+      containers:
+      - name: healthtech-farmacia
+        image: 784303971152.dkr.ecr.us-east-1.amazonaws.com/ms-farmacia:latest
+        imagePullPolicy: Always
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: DB_PORT
+          value: "5506"
+        - name: DB_NAME
+          value: FARMACIA
+        - name: DB_USER
+          value: root
+        - name: DB_PASSWORD
+          value: copito2004
+        ports:
+        - containerPort: 8085
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthtech-farmacia-service
+spec:
+  selector:
+    app: healthtech-farmacia
+  ports:
+  - port: 8085
+    targetPort: 8085
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthtech-ficha
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthtech-ficha
+  template:
+    metadata:
+      labels:
+        app: healthtech-ficha
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z mysql 5506; do echo esperando mysql; sleep 3; done']
+      containers:
+      - name: healthtech-ficha
+        image: 784303971152.dkr.ecr.us-east-1.amazonaws.com/ms-ficha:latest
+        imagePullPolicy: Always
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: DB_PORT
+          value: "5506"
+        - name: DB_NAME
+          value: FICHA
+        - name: DB_USER
+          value: root
+        - name: DB_PASSWORD
+          value: copito2004
+        ports:
+        - containerPort: 8086
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthtech-ficha-service
+spec:
+  selector:
+    app: healthtech-ficha
+  ports:
+  - port: 8086
+    targetPort: 8086
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthtech-hospitalizacion
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthtech-hospitalizacion
+  template:
+    metadata:
+      labels:
+        app: healthtech-hospitalizacion
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z mysql 5506; do echo esperando mysql; sleep 3; done']
+      containers:
+      - name: healthtech-hospitalizacion
+        image: 784303971152.dkr.ecr.us-east-1.amazonaws.com/ms-hospitalizacion:latest
+        imagePullPolicy: Always
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: DB_PORT
+          value: "5506"
+        - name: DB_NAME
+          value: HOSPITALIZACION
+        - name: DB_USER
+          value: root
+        - name: DB_PASSWORD
+          value: copito2004
+        ports:
+        - containerPort: 8087
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthtech-hospitalizacion-service
+spec:
+  selector:
+    app: healthtech-hospitalizacion
+  ports:
+  - port: 8087
+    targetPort: 8087
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthtech-inventario
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthtech-inventario
+  template:
+    metadata:
+      labels:
+        app: healthtech-inventario
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z mysql 5506; do echo esperando mysql; sleep 3; done']
+      containers:
+      - name: healthtech-inventario
+        image: 784303971152.dkr.ecr.us-east-1.amazonaws.com/ms-inventario:latest
+        imagePullPolicy: Always
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: DB_PORT
+          value: "5506"
+        - name: DB_NAME
+          value: INVENTARIO
+        - name: DB_USER
+          value: root
+        - name: DB_PASSWORD
+          value: copito2004
+        ports:
+        - containerPort: 8088
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthtech-inventario-service
+spec:
+  selector:
+    app: healthtech-inventario
+  ports:
+  - port: 8088
+    targetPort: 8088
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthtech-personal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthtech-personal
+  template:
+    metadata:
+      labels:
+        app: healthtech-personal
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z mysql 5506; do echo esperando mysql; sleep 3; done']
+      containers:
+      - name: healthtech-personal
+        image: 784303971152.dkr.ecr.us-east-1.amazonaws.com/ms-personal:latest
+        imagePullPolicy: Always
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: DB_PORT
+          value: "5506"
+        - name: DB_NAME
+          value: PERSONAL
+        - name: DB_USER
+          value: root
+        - name: DB_PASSWORD
+          value: copito2004
+        ports:
+        - containerPort: 8089
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthtech-personal-service
+spec:
+  selector:
+    app: healthtech-personal
+  ports:
+  - port: 8089
+    targetPort: 8089
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthtech-proveedor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthtech-proveedor
+  template:
+    metadata:
+      labels:
+        app: healthtech-proveedor
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z mysql 5506; do echo esperando mysql; sleep 3; done']
+      containers:
+      - name: healthtech-proveedor
+        image: 784303971152.dkr.ecr.us-east-1.amazonaws.com/ms-proveedor:latest
+        imagePullPolicy: Always
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: DB_PORT
+          value: "5506"
+        - name: DB_NAME
+          value: PROVEEDOR
+        - name: DB_USER
+          value: root
+        - name: DB_PASSWORD
+          value: copito2004
+        ports:
+        - containerPort: 8090
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthtech-proveedor-service
+spec:
+  selector:
+    app: healthtech-proveedor
+  ports:
+  - port: 8090
+    targetPort: 8090
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthtech-receta
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthtech-receta
+  template:
+    metadata:
+      labels:
+        app: healthtech-receta
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z mysql 5506; do echo esperando mysql; sleep 3; done']
+      containers:
+      - name: healthtech-receta
+        image: 784303971152.dkr.ecr.us-east-1.amazonaws.com/ms-receta:latest
+        imagePullPolicy: Always
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: DB_PORT
+          value: "5506"
+        - name: DB_NAME
+          value: RECETA
+        - name: DB_USER
+          value: root
+        - name: DB_PASSWORD
+          value: copito2004
+        ports:
+        - containerPort: 8091
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthtech-receta-service
+spec:
+  selector:
+    app: healthtech-receta
+  ports:
+  - port: 8091
+    targetPort: 8091
+  type: ClusterIP
